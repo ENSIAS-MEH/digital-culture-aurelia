@@ -1,0 +1,89 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram name="Use Case Diagram" id="use-case-diagram">
+    <mxGraphModel dx="1422" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- System Boundary -->
+        <mxCell id="2" value="Aurelia System" style="shape=mxgraph.sysml.package;labelX=110;align=left;spacingLeft=10;fillColor=none;strokeColor=#666666;fontSize=16;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="200" y="20" width="900" height="760" as="geometry"/>
+        </mxCell>
+
+        <!-- Actor: User -->
+        <mxCell id="3" value="User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="330" width="40" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Actor: AI Service -->
+        <mxCell id="4" value="AI Service" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="330" width="40" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Use Cases - User facing -->
+        <mxCell id="10" value="Register / Login" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="280" y="50" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="11" value="Upload Document" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="280" y="170" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="12" value="View Transactions" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="280" y="290" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="13" value="Edit / Delete&#xa;Transaction" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="280" y="410" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="14" value="Chat with Finances" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="280" y="530" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="15" value="View Spending&#xa;Forecasts" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="280" y="650" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="16" value="View Anomaly Alerts" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="280" y="745" width="180" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Use Cases - AI Service -->
+        <mxCell id="20" value="Parse &amp; Extract&#xa;Transactions" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="700" y="130" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="21" value="Categorize Transactions&#xa;via ML" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="700" y="260" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="22" value="RAG Retrieval &amp;&#xa;LLM Answer" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="700" y="400" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="23" value="Generate Forecast" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="700" y="530" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="24" value="Detect Anomalies" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="700" y="660" width="200" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- User --> Use Cases -->
+        <mxCell id="30" style="edgeStyle=none;" edge="1" source="3" target="10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="31" style="edgeStyle=none;" edge="1" source="3" target="11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="32" style="edgeStyle=none;" edge="1" source="3" target="12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="33" style="edgeStyle=none;" edge="1" source="3" target="13" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="34" style="edgeStyle=none;" edge="1" source="3" target="14" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="35" style="edgeStyle=none;" edge="1" source="3" target="15" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="36" style="edgeStyle=none;" edge="1" source="3" target="16" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- AI Service --> Use Cases -->
+        <mxCell id="40" style="edgeStyle=none;" edge="1" source="4" target="20" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="41" style="edgeStyle=none;" edge="1" source="4" target="21" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="42" style="edgeStyle=none;" edge="1" source="4" target="22" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="43" style="edgeStyle=none;" edge="1" source="4" target="23" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="44" style="edgeStyle=none;" edge="1" source="4" target="24" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- <<include>> relationships -->
+        <mxCell id="50" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=none;dashed=1;endArrow=open;endSize=12;" edge="1" source="11" target="20" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="51" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=none;dashed=1;endArrow=open;endSize=12;" edge="1" source="20" target="21" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="52" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=none;dashed=1;endArrow=open;endSize=12;" edge="1" source="14" target="22" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="53" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=none;dashed=1;endArrow=open;endSize=12;" edge="1" source="15" target="23" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="54" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=none;dashed=1;endArrow=open;endSize=12;" edge="1" source="16" target="24" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
