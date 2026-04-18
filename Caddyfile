@@ -1,0 +1,28 @@
+{$DOMAIN} {
+    # Backend API — JAX-RS lives at /api/* on the backend container
+    handle /api/* {
+        reverse_proxy backend:8080
+    }
+
+    # Frontend — served by Nginx (static build)
+    handle {
+        reverse_proxy frontend:80
+    }
+
+    # Compression
+    encode gzip
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    log {
+        output stdout
+        format console
+    }
+}

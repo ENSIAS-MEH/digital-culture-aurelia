@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { clsx } from 'clsx'
 
 const NAV = [
-  { to: '/',             icon: LayoutDashboard, label: 'Dashboard'    },
+  { to: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard'    },
   { to: '/documents',    icon: FileText,         label: 'Documents'    },
   { to: '/chat',         icon: MessageSquare,    label: 'Chat'         },
   { to: '/transactions', icon: CreditCard,       label: 'Transactions' },
@@ -96,7 +96,7 @@ export default function Sidebar() {
             <NavLink
               key={to}
               to={to}
-              end={to === '/'}
+              end={to === '/dashboard'}
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
                 clsx(

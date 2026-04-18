@@ -1,7 +1,9 @@
 import axios from 'axios'
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
-export const AI_URL = import.meta.env.VITE_AI_SERVICE_URL || 'http://localhost:8000'
+// Empty string = relative URL (production behind reverse proxy on same domain)
+// Set VITE_BACKEND_URL=http://localhost:8080 in .env for local dev
+const BACKEND = import.meta.env.VITE_BACKEND_URL ?? ''
+export const AI_URL = import.meta.env.VITE_AI_SERVICE_URL ?? ''
 
 export const api = axios.create({ baseURL: `${BACKEND}/api` })
 

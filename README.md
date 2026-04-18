@@ -140,39 +140,133 @@ docker compose up
 
 ---
 
-## Deploying to a Remote Server
+## Deploying to a Public Server (One URL)
 
-### Set your domain in `.env`
+This section covers getting Aurelia live at a single public URL like `https://aurelia.example.com`.
 
+### Architecture
+
+```
+Internet
+    │  HTTPS :443 / HTTP :80
+    ▼
+ Caddy  ── /api/* ──► WildFly backend  (internal)
+    │
+    └──── /* ────────► Nginx frontend  (static build, internal)
+
+Internal only — never exposed to internet:
+  PostgreSQL · ChromaDB · AI service
+  Ollama runs on the host (not in Docker)
+```
+
+### Step 1 — Choose a VPS
+
+You need at least **4 GB RAM** to run llama3.2. Recommended providers:
+
+| Provider | Plan | RAM | Cost |
+|---|---|---|---|
+| **Hetzner** | CX22 | 4 GB | ~€4/mo |
+| **Hetzner** | CX32 | 8 GB | ~€9/mo ← recommended |
+| **DigitalOcean** | Basic Droplet | 4 GB | $18/mo |
+
+Pick **Ubuntu 22.04 or 24.04** as the OS.
+
+### Step 2 — Point a domain at your server IP
+
+In your DNS provider add an **A record**:
+```
+aurelia.example.com  →  YOUR_SERVER_IP
+```
+DNS propagation takes 1–30 min. You can skip this and use the raw IP (HTTP only, no TLS).
+
+### Step 3 — Provision the server
+
+```bash
+# Update system
+apt update && apt upgrade -y
+
+# Install Docker
+curl -fsSL https://get.docker.com | sh
+
+# Install Ollama and pull the model (~2 GB)
+curl -fsSL https://ollama.com/install.sh | sh
+ollama serve &
+ollama pull llama3.2
+
+# Install Git
+apt install -y git
+```
+
+### Step 4 — Clone and configure
+
+```bash
+git clone https://github.com/Nasrouhg24/digital-culture-aurelia.git
+cd digital-culture-aurelia
+cp .env.example .env
+nano .env
+```
+
+Set these values:
 ```env
-CORS_ORIGIN=https://yourapp.example.com
-VITE_BACKEND_URL=https://yourapp.example.com
-VITE_AI_SERVICE_URL=https://yourapp.example.com
+DB_PASSWORD=<strong random password>
+JWT_SECRET=<run: openssl rand -hex 32>
+OLLAMA_MODEL=llama3.2
+CORS_ORIGIN=https://aurelia.example.com
+DOMAIN=aurelia.example.com
+
+# Leave empty for production — frontend calls /api/ via Caddy on the same domain
+VITE_BACKEND_URL=
+VITE_AI_SERVICE_URL=
 ```
 
-`VITE_*` variables are baked into the frontend at build time — rebuild after changing them:
+> Using a raw IP instead of a domain? Set `DOMAIN=YOUR_IP` — Caddy serves HTTP only (no auto-TLS).
+
+### Step 5 — Build and start
 
 ```bash
-docker compose build frontend
-docker compose up -d frontend
+docker compose -f docker-compose.prod.yml up --build -d
 ```
 
-### Ollama on a remote server
+What happens:
+1. PostgreSQL and ChromaDB start first
+2. AI service loads the HuggingFace embedding model (~60 s on first run)
+3. Backend WAR is compiled and deployed to WildFly
+4. Frontend is built as a static bundle and served by Nginx
+5. **Caddy obtains a Let's Encrypt TLS certificate automatically** (requires port 80/443 open and DNS pointing at this server)
 
-Ollama runs on the **host**, not inside Docker. The AI service container connects to it via `host.docker.internal` (already configured in `docker-compose.yml` via `extra_hosts: host.docker.internal:host-gateway`).
-
-Test the connection from inside the container:
+Watch the startup:
 ```bash
-docker exec aurelia-ai curl -s http://host.docker.internal:11434/api/tags
+docker compose -f docker-compose.prod.yml logs -f
 ```
 
-### Reverse proxy (Caddy example)
+### Step 6 — Open the app
 
+Navigate to `https://aurelia.example.com` — the login screen should appear.
+
+### Updating
+
+```bash
+git pull
+docker compose -f docker-compose.prod.yml up --build -d
 ```
-yourapp.example.com {
-    reverse_proxy /api/* localhost:8080
-    reverse_proxy /*     localhost:5173
-}
+
+### Recommended firewall
+
+```bash
+ufw allow 22/tcp    # SSH
+ufw allow 80/tcp    # HTTP (Caddy auto-redirects to HTTPS)
+ufw allow 443/tcp   # HTTPS
+ufw allow 443/udp   # HTTP/3 QUIC
+ufw enable
+```
+
+No other ports need to be public. PostgreSQL, ChromaDB, and the AI service are internal.
+
+### Reset
+
+```bash
+docker compose -f docker-compose.prod.yml down      # stop (keep data)
+docker compose -f docker-compose.prod.yml down -v   # stop and wipe all data
 ```
 
 ---

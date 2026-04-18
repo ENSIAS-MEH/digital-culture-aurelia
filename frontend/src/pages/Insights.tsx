@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Cell,
+  ResponsiveContainer, Cell,
 } from 'recharts'
 import { AlertTriangle, TrendingUp, Sparkles, FileText, ArrowRight, Info } from 'lucide-react'
 import { api } from '@/lib/api'

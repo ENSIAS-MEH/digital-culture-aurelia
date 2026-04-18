@@ -52,6 +52,14 @@ chromadata/
 .DS_Store
 Thumbs.db
 
+# ── Cloudflare tunnel binary (local tunnel tool — not part of the project) ───
+cloudflared.exe
+cloudflared
+
+# ── TypeScript build artifacts ────────────────────────────────────────────────
+frontend/tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo
+
 # ── Logs ─────────────────────────────────────────────────────────────────────
 *.log
 logs/

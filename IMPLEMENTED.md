@@ -90,6 +90,15 @@ This document tracks every feature that has been built and tested, plus the plan
 - `sources` column migrated from JSONB → TEXT via Flyway V2 to fix Hibernate type mismatch
 - ChromaDB pinned to `0.5.20` to match client library version
 
+### Landing Page
+- Public-facing landing at `/` (no auth required); authenticated app routes start at `/dashboard`
+- Full-screen WebGL sine-wave shader background (Three.js `RawShaderMaterial`, chromatic aberration uniform, resize-safe)
+- `ContainerScroll` 3-D tilt scroll animation (Framer Motion `useScroll` + `useTransform`) showcasing the real dashboard screenshot
+- `LiquidButton` SVG-distortion glass button (CVA variants, `@radix-ui/react-slot`, SVG `feTurbulence`/`feDisplacementMap` filter)
+- Six feature cards and three glassmorphism testimonial cards with backdrop-blur
+- Bottom CTA section and minimal footer
+- Dashboard screenshot served as static asset from `frontend/public/dashboard-preview.png`
+
 ### UI / Design System
 - Color palette "Midnight Bloom": OLED-black base (`#06060F`), violet primary, fuchsia secondary (`#D946EF`), champagne gold accent
 - Font pairing: Plus Jakarta Sans (headings) + IBM Plex Sans (body)
@@ -100,6 +109,7 @@ This document tracks every feature that has been built and tested, plus the plan
 - Login/Register: ambient radial glow blobs, animated logo, gradient card border
 - Responsive sidebar: mobile drawer with overlay
 - Accessible focus rings, `prefers-reduced-motion` respected, gradient scrollbar
+- `lib/utils.ts` — `cn()` helper (clsx + tailwind-merge) for composable class names
 
 ---
 
