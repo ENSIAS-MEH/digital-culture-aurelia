@@ -1,0 +1,38 @@
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.10.2
+pydantic-settings==2.6.1
+
+# Database
+asyncpg==0.30.0
+sqlalchemy[asyncio]==2.0.36
+psycopg2-binary==2.9.10
+
+# LangChain + RAG
+langchain==0.3.9
+langchain-anthropic==0.3.0
+langchain-community==0.3.9
+langchain-chroma==0.1.4
+langchain-text-splitters==0.3.2
+
+# Vector store
+chromadb==0.5.20
+
+# Embeddings
+sentence-transformers==3.3.1
+
+# Document parsing
+pdfplumber==0.11.4
+pandas==2.2.3
+openpyxl==3.1.5
+
+# AI client
+anthropic==0.40.0
+
+# Utilities
+python-multipart==0.0.18
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+slowapi==0.1.9
+httpx==0.28.1
+sse-starlette==2.1.3

@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --aurelia-bg:        #0d0a1a;
+    --aurelia-surface:   #1a1040;
+    --aurelia-primary:   #7c3aed;
+    --aurelia-secondary: #a855f7;
+    --aurelia-accent:    #f59e0b;
+    --aurelia-text:      #f1f0f9;
+    --aurelia-muted:     #6b7280;
+    --aurelia-success:   #10b981;
+    --aurelia-danger:    #ef4444;
+  }
+
+  html, body, #root {
+    @apply bg-aurelia-bg text-aurelia-text min-h-screen;
+    font-family: 'Inter', ui-sans-serif, system-ui;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Sora', ui-sans-serif, system-ui;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-2xl border border-aurelia-primary/20;
+    background: rgba(124, 58, 237, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg font-medium text-white transition-all duration-200;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 16px rgba(124, 58, 237, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .aurora-bg {
+    background: radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(168,85,247,0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at 60% 80%, rgba(245,158,11,0.05) 0%, transparent 60%),
+                #0d0a1a;
+  }
+
+  .input-dark {
+    @apply w-full bg-aurelia-surface border border-aurelia-primary/30 rounded-lg px-4 py-2.5
+           text-aurelia-text placeholder-aurelia-muted
+           focus:outline-none focus:ring-2 focus:ring-aurelia-primary/60 transition-all duration-200;
+  }
+}

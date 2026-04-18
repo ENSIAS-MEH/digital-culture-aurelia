@@ -8,9 +8,10 @@
         <jta-data-source>java:jboss/datasources/AureliaDS</jta-data-source>
 
         <properties>
-            <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
+            <!-- Flyway owns the schema — Hibernate only validates -->
+            <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.show_sql" value="false"/>
             <property name="hibernate.format_sql" value="true"/>
         </properties>
     </persistence-unit>

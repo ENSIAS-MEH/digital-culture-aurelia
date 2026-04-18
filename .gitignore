@@ -1,0 +1,46 @@
+# Environment
+.env
+.env.local
+
+# Java / Maven
+backend/target/
+*.class
+*.war
+*.jar
+!backend/docker/
+
+# Python
+ai-service/__pycache__/
+ai-service/**/__pycache__/
+ai-service/.venv/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+.pytest_cache/
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.apk
+*.aab
+
+# Docker volumes (local)
+pgdata/
+chromadata/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
