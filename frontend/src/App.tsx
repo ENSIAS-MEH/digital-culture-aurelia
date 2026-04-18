@@ -7,6 +7,7 @@ import Dashboard from '@/pages/Dashboard'
 import Documents from '@/pages/Documents'
 import Chat from '@/pages/Chat'
 import Transactions from '@/pages/Transactions'
+import Insights from '@/pages/Insights'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/documents"    element={<Layout><Documents /></Layout>} />
         <Route path="/chat"         element={<Layout><Chat /></Layout>} />
         <Route path="/transactions" element={<Layout><Transactions /></Layout>} />
+        <Route path="/insights"     element={<Layout><Insights /></Layout>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

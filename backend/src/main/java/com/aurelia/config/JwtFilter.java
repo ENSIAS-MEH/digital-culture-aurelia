@@ -22,7 +22,7 @@ public class JwtFilter implements ContainerRequestFilter {
 
         // Public endpoints
         String path = ctx.getUriInfo().getPath();
-        if (path.startsWith("auth/") || path.equals("health")) return;
+        if (path.startsWith("auth/") || path.startsWith("/auth/") || path.equals("health") || path.equals("/health")) return;
 
         String auth = ctx.getHeaderString("Authorization");
         if (auth == null || !auth.startsWith("Bearer ")) {

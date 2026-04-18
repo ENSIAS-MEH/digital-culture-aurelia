@@ -38,4 +38,12 @@ public class DocumentRepository {
     public void delete(Document document) {
         em.remove(em.contains(document) ? document : em.merge(document));
     }
+
+    public List<Document> findStuckProcessing(java.time.OffsetDateTime cutoff) {
+        return em.createQuery(
+                "SELECT d FROM Document d WHERE d.status = 'processing' AND d.uploadedAt < :cutoff",
+                Document.class)
+                .setParameter("cutoff", cutoff)
+                .getResultList();
+    }
 }

@@ -7,6 +7,9 @@ import com.aurelia.model.ChatSession;
 import com.aurelia.model.User;
 import com.aurelia.repository.ChatRepository;
 import com.aurelia.repository.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import java.net.URI;
@@ -16,10 +19,14 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Stateless
 public class ChatService {
+
+    private static final Logger LOG = Logger.getLogger(ChatService.class.getName());
 
     private static final String AI_SERVICE_URL =
             System.getenv().getOrDefault("AI_SERVICE_URL", "http://localhost:8000");
@@ -29,7 +36,10 @@ public class ChatService {
 
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
+            .version(java.net.http.HttpClient.Version.HTTP_1_1)
             .build();
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public ChatSessionDTO createSession(UUID userId) {
         User user = userRepository.findById(userId)
@@ -56,7 +66,7 @@ public class ChatService {
                 .map(ChatMessageDTO::from).collect(Collectors.toList());
     }
 
-    public ChatMessageDTO sendMessage(UUID userId, UUID sessionId, String content) {
+    public ChatMessageDTO sendMessage(UUID userId, UUID sessionId, String content, String authToken) {
         ChatSession session = chatRepository.findSessionById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Session not found"));
         if (!session.getUser().getId().equals(userId))
@@ -73,25 +83,33 @@ public class ChatService {
         String aiContent;
         String sources = null;
         try {
-            String body = String.format(
-                    "{\"session_id\":\"%s\",\"user_id\":\"%s\",\"content\":\"%s\"}",
-                    sessionId, userId, content.replace("\"", "\\\""));
+            ObjectNode payload = mapper.createObjectNode();
+            payload.put("session_id", sessionId.toString());
+            payload.put("user_id", userId.toString());
+            payload.put("content", content);
+            String body = mapper.writeValueAsString(payload);
 
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(AI_SERVICE_URL + "/chat/" + sessionId))
                     .header("Content-Type", "application/json")
+                    .header("Authorization", authToken != null ? authToken : "")
                     .POST(HttpRequest.BodyPublishers.ofString(body))
-                    .timeout(Duration.ofSeconds(60))
+                    .timeout(Duration.ofSeconds(30))
                     .build();
 
             HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
             if (resp.statusCode() == 200) {
-                aiContent = extractJsonField(resp.body(), "content");
-                sources = extractJsonField(resp.body(), "sources");
+                JsonNode node = mapper.readTree(resp.body());
+                aiContent = node.path("content").asText("I couldn't generate a response.");
+                JsonNode sourcesNode = node.path("sources");
+                sources = sourcesNode.isMissingNode() || sourcesNode.isNull()
+                        ? null : mapper.writeValueAsString(sourcesNode);
             } else {
+                LOG.warning("AI service returned HTTP " + resp.statusCode() + " for session " + sessionId);
                 aiContent = "I'm having trouble connecting to the AI service right now. Please try again.";
             }
         } catch (Exception e) {
+            LOG.log(Level.WARNING, "AI service call failed for session " + sessionId, e);
             aiContent = "AI service is unavailable. Please ensure it is running.";
         }
 
@@ -110,15 +128,5 @@ public class ChatService {
         }
 
         return ChatMessageDTO.from(assistantMsg);
-    }
-
-    /** Minimal JSON field extractor — no extra deps needed. */
-    private String extractJsonField(String json, String field) {
-        String key = "\"" + field + "\":\"";
-        int start = json.indexOf(key);
-        if (start < 0) return null;
-        start += key.length();
-        int end = json.indexOf("\"", start);
-        return end > start ? json.substring(start, end) : null;
     }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Plus, MessageSquare, ChevronDown, ChevronRight } from 'lucide-react'
-import { api, AI_URL, getToken } from '@/lib/api'
+import { api } from '@/lib/api'
 import type { ChatSession, ChatMessage } from '@/types'
 import GlassCard from '@/components/ui/GlassCard'
 import Button from '@/components/ui/Button'
@@ -15,26 +15,27 @@ const SUGGESTIONS = [
 ]
 
 export default function Chat() {
-  const [sessions, setSessions]       = useState<ChatSession[]>([])
-  const [activeId, setActiveId]       = useState<string | null>(null)
-  const [messages, setMessages]       = useState<ChatMessage[]>([])
-  const [input, setInput]             = useState('')
-  const [streaming, setStreaming]     = useState(false)
-  const [streamingText, setStreaming_text] = useState('')
+  const [sessions, setSessions]             = useState<ChatSession[]>([])
+  const [activeId, setActiveId]             = useState<string | null>(null)
+  const [messages, setMessages]             = useState<ChatMessage[]>([])
+  const [input, setInput]                   = useState('')
+  const [thinking, setThinking]             = useState(false)
   const [loadingSessions, setLoadingSessions] = useState(true)
   const [loadingMessages, setLoadingMessages] = useState(false)
-  const bottomRef  = useRef<HTMLDivElement>(null)
-  const abortRef   = useRef<AbortController | null>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     api.get('/chat/sessions')
-      .then(r => { setSessions(r.data); if (r.data[0]) selectSession(r.data[0].id) })
+      .then(r => {
+        setSessions(r.data)
+        if (r.data[0]) selectSession(r.data[0].id)
+      })
       .finally(() => setLoadingSessions(false))
   }, [])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, streamingText])
+  }, [messages, thinking])
 
   const selectSession = (id: string) => {
     setActiveId(id)
@@ -45,85 +46,53 @@ export default function Chat() {
       .finally(() => setLoadingMessages(false))
   }
 
-  const newSession = async () => {
+  const createSession = async (): Promise<string> => {
     const { data } = await api.post('/chat/sessions')
     setSessions(s => [data, ...s])
-    selectSession(data.id)
+    setActiveId(data.id)
+    setMessages([])
+    return data.id as string
   }
 
-  const send = async (text?: string) => {
+  const send = async (text?: string, sessionId?: string) => {
     const content = (text ?? input).trim()
-    if (!content || streaming || !activeId) return
+    const sid = sessionId ?? activeId
+    if (!content || thinking || !sid) return
     setInput('')
 
     const userMsg: ChatMessage = {
-      id: crypto.randomUUID(), role: 'user', content,
+      id: crypto.randomUUID(),
+      role: 'user',
+      content,
       createdAt: new Date().toISOString(),
     }
     setMessages(m => [...m, userMsg])
-    setStreaming(true)
-    setStreaming_text('')
-
-    abortRef.current = new AbortController()
+    setThinking(true)
 
     try {
-      const res = await fetch(
-        `${AI_URL}/chat/${activeId}/stream?question=${encodeURIComponent(content)}`,
-        {
-          headers: { Authorization: `Bearer ${getToken()}` },
-          signal: abortRef.current.signal,
-        }
-      )
-
-      const reader = res.body!.getReader()
-      const decoder = new TextDecoder()
-      let full = ''
-      let sources: any[] = []
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        const chunk = decoder.decode(value)
-        for (const line of chunk.split('\n')) {
-          if (!line.startsWith('data: ')) continue
-          try {
-            const payload = JSON.parse(line.slice(6))
-            if (payload.type === 'sources') sources = payload.sources ?? []
-            if (payload.type === 'token') {
-              full += payload.content
-              setStreaming_text(full)
-            }
-          } catch { /* ignore malformed */ }
-        }
-      }
-
-      const aiMsg: ChatMessage = {
-        id: crypto.randomUUID(), role: 'assistant', content: full,
-        sources: sources.length ? JSON.stringify(sources) : undefined,
+      const { data } = await api.post(`/chat/sessions/${sid}/messages`, { content })
+      setMessages(m => [...m, data])
+      // Refresh sessions list so title updates appear
+      api.get('/chat/sessions').then(r => setSessions(r.data))
+    } catch {
+      setMessages(m => [...m, {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: 'AI service is unavailable. Please try again later.',
         createdAt: new Date().toISOString(),
-      }
-      setMessages(m => [...m, aiMsg])
-    } catch (err: any) {
-      if (err.name !== 'AbortError') {
-        // Fallback to non-streaming backend proxy
-        try {
-          const { data } = await api.post(`/chat/sessions/${activeId}/messages`, { content })
-          setMessages(m => [...m, data])
-        } catch {
-          setMessages(m => [...m, {
-            id: crypto.randomUUID(), role: 'assistant',
-            content: 'AI service is unavailable. Please try again later.',
-            createdAt: new Date().toISOString(),
-          }])
-        }
-      }
+      }])
     } finally {
-      setStreaming(false)
-      setStreaming_text('')
+      setThinking(false)
     }
+  }
 
-    // Refresh sessions list to update title
-    api.get('/chat/sessions').then(r => setSessions(r.data))
+  const handleSuggestion = async (s: string) => {
+    if (activeId) {
+      send(s)
+    } else {
+      const sid = await createSession()
+      send(s, sid)
+    }
   }
 
   return (
@@ -132,7 +101,7 @@ export default function Chat() {
       <aside className="hidden lg:flex flex-col w-60 shrink-0">
         <GlassCard className="flex-1 p-0 overflow-hidden flex flex-col">
           <div className="px-4 py-3 border-b border-aurelia-primary/15">
-            <Button variant="ghost" fullWidth onClick={newSession} className="text-xs py-2">
+            <Button variant="ghost" fullWidth onClick={createSession} className="text-xs py-2">
               <Plus size={14} />New conversation
             </Button>
           </div>
@@ -161,7 +130,6 @@ export default function Chat() {
       {/* Chat panel */}
       <div className="flex-1 flex flex-col min-w-0">
         <GlassCard className="flex-1 p-0 overflow-hidden flex flex-col">
-          {/* Messages */}
           <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
             {!activeId ? (
               <div className="h-full flex flex-col items-center justify-center gap-6">
@@ -171,7 +139,7 @@ export default function Chat() {
                   {SUGGESTIONS.map(s => (
                     <button
                       key={s}
-                      onClick={() => { if (!activeId) newSession().then(() => send(s)); else send(s) }}
+                      onClick={() => handleSuggestion(s)}
                       className="text-left text-xs text-aurelia-muted border border-aurelia-primary/20 rounded-xl px-3 py-2.5 hover:bg-aurelia-primary/10 hover:text-aurelia-text transition-all duration-150 cursor-pointer"
                     >
                       {s}
@@ -209,21 +177,18 @@ export default function Chat() {
                   ))}
                 </AnimatePresence>
 
-                {/* Streaming bubble */}
-                {streaming && (
+                {thinking && (
                   <div className="flex justify-start">
                     <div
-                      className="max-w-[80%] rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-aurelia-text border border-aurelia-primary/20 whitespace-pre-wrap"
+                      className="rounded-2xl rounded-tl-sm px-4 py-3 border border-aurelia-primary/20"
                       style={{ background: 'rgba(124,58,237,0.1)' }}
                     >
-                      {streamingText || (
-                        <span className="flex gap-1">
-                          {[0,1,2].map(i => (
-                            <span key={i} className="h-1.5 w-1.5 rounded-full bg-aurelia-primary/60 animate-bounce"
-                              style={{ animationDelay: `${i * 0.15}s` }} />
-                          ))}
-                        </span>
-                      )}
+                      <span className="flex gap-1">
+                        {[0, 1, 2].map(i => (
+                          <span key={i} className="h-1.5 w-1.5 rounded-full bg-aurelia-primary/60 animate-bounce"
+                            style={{ animationDelay: `${i * 0.15}s` }} />
+                        ))}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -232,12 +197,11 @@ export default function Chat() {
             <div ref={bottomRef} />
           </div>
 
-          {/* Input */}
           <div className="px-4 pb-4 pt-2 border-t border-aurelia-primary/15">
             {!activeId && (
               <div className="grid grid-cols-2 gap-2 mb-3 lg:hidden">
                 {SUGGESTIONS.slice(0, 2).map(s => (
-                  <button key={s} onClick={() => send(s)}
+                  <button key={s} onClick={() => handleSuggestion(s)}
                     className="text-left text-xs text-aurelia-muted border border-aurelia-primary/20 rounded-xl px-3 py-2 hover:bg-aurelia-primary/10 cursor-pointer transition-colors">
                     {s}
                   </button>
@@ -256,7 +220,7 @@ export default function Chat() {
                 rows={1}
                 className="flex-1 resize-none rounded-xl bg-aurelia-surface border border-aurelia-primary/30 px-4 py-3 text-sm text-aurelia-text placeholder-aurelia-muted focus:outline-none focus:ring-2 focus:ring-aurelia-primary/60 transition-all duration-200 max-h-32"
               />
-              <Button type="submit" disabled={!input.trim() || streaming || !activeId}>
+              <Button type="submit" disabled={!input.trim() || thinking || !activeId}>
                 <Send size={16} />
               </Button>
             </form>

@@ -68,3 +68,29 @@ export interface ChatMessage {
   sources?: string
   createdAt: string
 }
+
+export interface MonthlyTotal {
+  month: string   // "YYYY-MM"
+  total: number
+}
+
+export interface ForecastCategory {
+  category: string
+  monthly_totals: MonthlyTotal[]
+  forecast_next_month: number
+}
+
+export interface Anomaly {
+  txn_id: string
+  date: string
+  amount: number
+  description: string
+  category: string
+  category_mean: number
+  deviation: number
+}
+
+export interface ForecastResponse {
+  forecast_by_category: ForecastCategory[]
+  anomalies: Anomaly[]
+}

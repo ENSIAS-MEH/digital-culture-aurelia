@@ -4,10 +4,11 @@ import com.aurelia.dto.ApiError;
 import com.aurelia.dto.CategoryPatchRequest;
 import com.aurelia.dto.TransactionDTO;
 import com.aurelia.dto.TransactionSummaryDTO;
+import com.aurelia.service.JwtService;
 import com.aurelia.service.TransactionService;
+import io.jsonwebtoken.Claims;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.*;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -22,11 +23,12 @@ import java.util.UUID;
 public class TransactionResource {
 
     @EJB private TransactionService transactionService;
+    @EJB private JwtService jwtService;
+    @Context private HttpHeaders httpHeaders;
 
     @GET
     @Operation(summary = "List transactions with optional filters")
     public Response list(
-            @Context ContainerRequestContext ctx,
             @QueryParam("from")       String from,
             @QueryParam("to")         String to,
             @QueryParam("categoryId") Integer categoryId) {
@@ -34,7 +36,7 @@ public class TransactionResource {
         LocalDate fromDate = from != null ? LocalDate.parse(from) : null;
         LocalDate toDate   = to   != null ? LocalDate.parse(to)   : null;
 
-        List<TransactionDTO> txns = transactionService.list(currentUser(ctx), fromDate, toDate, categoryId);
+        List<TransactionDTO> txns = transactionService.list(currentUser(), fromDate, toDate, categoryId);
         return Response.ok(txns).build();
     }
 
@@ -42,14 +44,13 @@ public class TransactionResource {
     @Path("summary")
     @Operation(summary = "Spending summary grouped by category")
     public Response summary(
-            @Context ContainerRequestContext ctx,
             @QueryParam("from") String from,
             @QueryParam("to")   String to) {
 
         LocalDate fromDate = from != null ? LocalDate.parse(from) : null;
         LocalDate toDate   = to   != null ? LocalDate.parse(to)   : null;
 
-        TransactionSummaryDTO summary = transactionService.summary(currentUser(ctx), fromDate, toDate);
+        TransactionSummaryDTO summary = transactionService.summary(currentUser(), fromDate, toDate);
         return Response.ok(summary).build();
     }
 
@@ -57,11 +58,10 @@ public class TransactionResource {
     @Path("{id}/category")
     @Operation(summary = "Assign or change the category of a transaction")
     public Response updateCategory(
-            @Context ContainerRequestContext ctx,
             @PathParam("id") UUID id,
             CategoryPatchRequest req) {
         try {
-            TransactionDTO updated = transactionService.updateCategory(currentUser(ctx), id, req.categoryId);
+            TransactionDTO updated = transactionService.updateCategory(currentUser(), id, req.categoryId);
             return Response.ok(updated).build();
         } catch (IllegalArgumentException e) {
             return Response.status(400).entity(ApiError.of(e.getMessage())).build();
@@ -70,7 +70,12 @@ public class TransactionResource {
         }
     }
 
-    private UUID currentUser(ContainerRequestContext ctx) {
-        return UUID.fromString((String) ctx.getProperty("userId"));
+    private UUID currentUser() {
+        String auth = httpHeaders.getHeaderString("Authorization");
+        if (auth == null || !auth.startsWith("Bearer "))
+            throw new NotAuthorizedException("Bearer token required");
+        Claims claims = jwtService.parseToken(auth.substring(7))
+                .orElseThrow(() -> new NotAuthorizedException("Invalid token"));
+        return UUID.fromString(claims.getSubject());
     }
 }

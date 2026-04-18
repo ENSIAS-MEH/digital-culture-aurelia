@@ -1,16 +1,17 @@
-"""RAG pipeline: embed documents → store in ChromaDB → retrieve + generate with Claude."""
+"""RAG pipeline: embed documents → store in ChromaDB → retrieve + generate with Ollama."""
 from __future__ import annotations
 
+import hashlib
 import json
 from typing import AsyncIterator
 
 import chromadb
-from langchain_anthropic import ChatAnthropic
+from langchain_ollama import ChatOllama
 from langchain_chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -23,11 +24,6 @@ Be concise, accurate, and helpful. Format numbers as currency when appropriate.
 
 Context from the user's documents:
 {context}"""
-
-_CATEGORIES = [
-    "Food", "Transport", "Housing", "Entertainment",
-    "Healthcare", "Shopping", "Income", "Other",
-]
 
 
 # ── Singletons (initialised once in lifespan) ─────────────────────────────────
@@ -51,21 +47,27 @@ def init_rag() -> None:
     )
 
 
+def _collection_name(user_id: str) -> str:
+    """Hash user_id to a safe, fixed-length ChromaDB collection name."""
+    hashed = hashlib.sha256(user_id.encode()).hexdigest()[:24]
+    return f"u_{hashed}"
+
+
 def _get_vector_store(user_id: str) -> Chroma:
     assert _chroma_client is not None and _embeddings is not None, "RAG not initialised"
     return Chroma(
         client=_chroma_client,
-        collection_name=f"user_{user_id}_documents",
+        collection_name=_collection_name(user_id),
         embedding_function=_embeddings,
     )
 
 
-def _make_llm(streaming: bool = False) -> ChatAnthropic:
-    return ChatAnthropic(
-        model=settings.claude_model,
-        anthropic_api_key=settings.anthropic_api_key,
-        streaming=streaming,
-        max_tokens=2048,
+def _make_llm(streaming: bool = False) -> ChatOllama:
+    return ChatOllama(
+        model=settings.ollama_model,
+        base_url=settings.ollama_base_url,
+        num_predict=2048,
+        temperature=0.3,
     )
 
 
@@ -99,7 +101,7 @@ def delete_document_chunks(user_id: str, doc_id: str) -> None:
         pass
 
 
-# ── Retrieval + Generation ─────────────────────────────────────────────────────
+# ── Retrieval + Generation ────────────────────────────────────────────────────
 
 def _format_docs(docs: list[Document]) -> str:
     return "\n\n---\n\n".join(d.page_content for d in docs)
@@ -114,9 +116,8 @@ async def query(
     vs = _get_vector_store(user_id)
     retriever = vs.as_retriever(search_type="similarity", search_kwargs={"k": 5})
 
-    # Build history messages for the prompt
     history_messages = []
-    for human, ai in history[-6:]:  # last 3 turns
+    for human, ai in history[-6:]:
         history_messages.append(("human", human))
         history_messages.append(("ai", ai))
 
@@ -134,7 +135,6 @@ async def query(
         | StrOutputParser()
     )
 
-    # Fetch context docs for source citations
     context_docs = await retriever.ainvoke(question)
     answer = await chain.ainvoke(question)
 
@@ -184,7 +184,6 @@ async def stream_query(
         for d in context_docs
     ]
 
-    # First yield sources so client can display them immediately
     yield json.dumps({"type": "sources", "sources": sources})
 
     async for token in chain.astream({"context": context_text, "question": question}):

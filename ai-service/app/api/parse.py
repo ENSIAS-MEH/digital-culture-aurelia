@@ -68,7 +68,14 @@ async def parse_document(
     cat_map = {c.name.lower(): c.id for c in cats}
 
     # ── Persist transactions ───────────────────────────────────────────────────
-    import datetime
+    import datetime, re as _re
+    _strip_html = _re.compile(r"<[^>]+>")
+
+    def _clean(s: str | None, max_len: int) -> str:
+        if not s:
+            return ""
+        return _strip_html.sub("", str(s)).strip()[:max_len]
+
     for txn in categorized:
         try:
             txn_date = datetime.date.fromisoformat(txn["date"])
@@ -79,11 +86,11 @@ async def parse_document(
             user_id=_uuid.UUID(user_id),
             document_id=_uuid.UUID(doc_id),
             txn_date=txn_date,
-            amount=txn["amount"],
-            description=txn["description"],
-            merchant=txn.get("merchant"),
-            raw_category=txn.get("category"),
-            category_id=cat_map.get(txn.get("category", "").lower()),
+            amount=float(txn["amount"]),
+            description=_clean(txn.get("description"), 500),
+            merchant=_clean(txn.get("merchant"), 200) or None,
+            raw_category=_clean(txn.get("category"), 100) or None,
+            category_id=cat_map.get((txn.get("category") or "").lower()),
             is_confirmed=False,
         )
         db.add(row)

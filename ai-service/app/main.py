@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -11,6 +12,11 @@ from app.ml.categorizer import init_categorizer
 from app.rag.pipeline import init_rag
 
 limiter = Limiter(key_func=get_remote_address)
+
+
+def _cors_origins() -> list[str]:
+    raw = os.getenv("CORS_ORIGIN", "http://localhost:5173")
+    return [o.strip() for o in raw.split(",") if o.strip()]
 
 
 @asynccontextmanager
@@ -35,10 +41,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:8080",
-    ],
+    allow_origins=_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

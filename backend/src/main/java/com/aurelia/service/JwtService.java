@@ -3,6 +3,7 @@ package com.aurelia.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.MacAlgorithm;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Singleton;
 import javax.crypto.SecretKey;
@@ -13,7 +14,8 @@ import java.util.Optional;
 @Singleton
 public class JwtService {
 
-    private static final long EXPIRY_MS = 24L * 60 * 60 * 1000; // 24 hours
+    private static final long EXPIRY_MS = 24L * 60 * 60 * 1000;
+    private static final MacAlgorithm ALG = Jwts.SIG.HS256;
 
     private SecretKey key;
 
@@ -26,11 +28,11 @@ public class JwtService {
         if (secret == null || secret.isBlank()) {
             throw new IllegalStateException("JWT_SECRET environment variable is not set");
         }
-        // Ensure key is at least 256 bits
-        byte[] padded = new byte[32];
         byte[] bytes = secret.getBytes(StandardCharsets.UTF_8);
-        System.arraycopy(bytes, 0, padded, 0, Math.min(bytes.length, padded.length));
-        this.key = Keys.hmacShaKeyFor(padded);
+        // HS256 requires exactly 32 bytes; truncate or pad
+        byte[] key32 = new byte[32];
+        System.arraycopy(bytes, 0, key32, 0, Math.min(bytes.length, 32));
+        this.key = Keys.hmacShaKeyFor(key32);
     }
 
     public String generateToken(String userId, String email) {
@@ -39,7 +41,7 @@ public class JwtService {
                 .claim("email", email)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + EXPIRY_MS))
-                .signWith(key)
+                .signWith(key, ALG)
                 .compact();
     }
 
