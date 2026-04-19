@@ -1,0 +1,171 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.aurelia.mobile"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="23"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+11-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:5:3-75
+11-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:5:20-73
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:3:3-64
+12-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:3:20-62
+13    <uses-permission android:name="android.permission.VIBRATE" /> <!-- These require runtime permissions on M -->
+13-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:6:3-63
+13-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:6:20-61
+14    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+14-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:8:3-77
+14-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:8:20-75
+15    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- END OPTIONAL PERMISSIONS -->
+15-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:9:3-78
+15-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:9:20-76
+16    <queries>
+16-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:12:3-19:13
+17
+18        <!-- Support checking for http(s) links via the Linking API -->
+19        <intent>
+19-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:14:5-18:14
+20            <action android:name="android.intent.action.VIEW" />
+20-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:15:7-59
+20-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:15:15-56
+21
+22            <category android:name="android.intent.category.BROWSABLE" />
+22-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:16:7-68
+22-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:16:17-65
+23
+24            <data android:scheme="https" />
+24-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:17:7-38
+24-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:17:13-35
+25        </intent>
+26        <!-- Query open documents -->
+27        <intent>
+27-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:15:9-17:18
+28            <action android:name="android.intent.action.OPEN_DOCUMENT_TREE" />
+28-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:16:13-79
+28-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:16:21-76
+29        </intent>
+30    </queries>
+31
+32    <permission
+32-->[androidx.core:core:1.12.0] C:\Users\abder\.gradle\caches\8.8\transforms\a48b025998af6606546beb70da9439b2\transformed\core-1.12.0\AndroidManifest.xml:22:5-24:47
+33        android:name="com.aurelia.mobile.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+33-->[androidx.core:core:1.12.0] C:\Users\abder\.gradle\caches\8.8\transforms\a48b025998af6606546beb70da9439b2\transformed\core-1.12.0\AndroidManifest.xml:23:9-81
+34        android:protectionLevel="signature" />
+34-->[androidx.core:core:1.12.0] C:\Users\abder\.gradle\caches\8.8\transforms\a48b025998af6606546beb70da9439b2\transformed\core-1.12.0\AndroidManifest.xml:24:9-44
+35
+36    <uses-permission android:name="com.aurelia.mobile.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+36-->[androidx.core:core:1.12.0] C:\Users\abder\.gradle\caches\8.8\transforms\a48b025998af6606546beb70da9439b2\transformed\core-1.12.0\AndroidManifest.xml:26:5-97
+36-->[androidx.core:core:1.12.0] C:\Users\abder\.gradle\caches\8.8\transforms\a48b025998af6606546beb70da9439b2\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
+37
+38    <application
+38-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:21:3-29:17
+39        android:name="com.aurelia.mobile.MainApplication"
+39-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:21:16-47
+40        android:allowBackup="false"
+40-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:21:162-189
+41        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+41-->[androidx.core:core:1.12.0] C:\Users\abder\.gradle\caches\8.8\transforms\a48b025998af6606546beb70da9439b2\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
+42        android:debuggable="true"
+43        android:extractNativeLibs="false"
+44        android:icon="@mipmap/ic_launcher"
+44-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:21:81-115
+45        android:label="@string/app_name"
+45-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:21:48-80
+46        android:roundIcon="@mipmap/ic_launcher_round"
+46-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:21:116-161
+47        android:testOnly="true"
+48        android:theme="@style/AppTheme"
+48-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:21:190-221
+49        android:usesCleartextTraffic="true" >
+49-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\debug\AndroidManifest.xml:6:18-53
+50        <activity
+50-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:22:5-27:16
+51            android:name="com.aurelia.mobile.MainActivity"
+51-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:22:15-43
+52            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
+52-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:22:44-134
+53            android:exported="true"
+53-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:22:256-279
+54            android:launchMode="singleTask"
+54-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:22:135-166
+55            android:theme="@style/Theme.App.SplashScreen"
+55-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:22:210-255
+56            android:windowSoftInputMode="adjustResize" >
+56-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:22:167-209
+57            <intent-filter>
+57-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:23:7-26:23
+58                <action android:name="android.intent.action.MAIN" />
+58-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:24:9-60
+58-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:24:17-58
+59
+60                <category android:name="android.intent.category.LAUNCHER" />
+60-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:25:9-68
+60-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:25:19-66
+61            </intent-filter>
+62        </activity>
+63        <activity
+63-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:28:5-106
+64            android:name="com.facebook.react.devsupport.DevSettingsActivity"
+64-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:28:15-79
+65            android:exported="false" />
+65-->C:\Users\abder\Documents\digital-culture-aurelia\mobile\android\app\src\main\AndroidManifest.xml:28:80-104
+66
+67        <provider
+67-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:21:9-30:20
+68            android:name="expo.modules.filesystem.FileSystemFileProvider"
+68-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:22:13-74
+69            android:authorities="com.aurelia.mobile.FileSystemFileProvider"
+69-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:23:13-74
+70            android:exported="false"
+70-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:24:13-37
+71            android:grantUriPermissions="true" >
+71-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:25:13-47
+72            <meta-data
+72-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:27:13-29:70
+73                android:name="android.support.FILE_PROVIDER_PATHS"
+73-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:28:17-67
+74                android:resource="@xml/file_system_provider_paths" />
+74-->[:expo-file-system] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:29:17-67
+75        </provider>
+76
+77        <meta-data
+77-->[:expo-modules-core] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:9-11:89
+78            android:name="org.unimodules.core.AppLoader#react-native-headless"
+78-->[:expo-modules-core] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:10:13-79
+79            android:value="expo.modules.adapters.react.apploader.RNHeadlessAppLoader" />
+79-->[:expo-modules-core] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-86
+80        <meta-data
+80-->[:expo-modules-core] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:12:9-15:45
+81            android:name="com.facebook.soloader.enabled"
+81-->[:expo-modules-core] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:13:13-57
+82            android:value="true" />
+82-->[:expo-modules-core] C:\Users\abder\Documents\digital-culture-aurelia\mobile\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:14:13-33
+83
+84        <provider
+84-->[androidx.emoji2:emoji2:1.2.0] C:\Users\abder\.gradle\caches\8.8\transforms\d18f42b4ba3c3565a539149b18a46937\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+85            android:name="androidx.startup.InitializationProvider"
+85-->[androidx.emoji2:emoji2:1.2.0] C:\Users\abder\.gradle\caches\8.8\transforms\d18f42b4ba3c3565a539149b18a46937\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
+86            android:authorities="com.aurelia.mobile.androidx-startup"
+86-->[androidx.emoji2:emoji2:1.2.0] C:\Users\abder\.gradle\caches\8.8\transforms\d18f42b4ba3c3565a539149b18a46937\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
+87            android:exported="false" >
+87-->[androidx.emoji2:emoji2:1.2.0] C:\Users\abder\.gradle\caches\8.8\transforms\d18f42b4ba3c3565a539149b18a46937\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
+88            <meta-data
+88-->[androidx.emoji2:emoji2:1.2.0] C:\Users\abder\.gradle\caches\8.8\transforms\d18f42b4ba3c3565a539149b18a46937\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+89                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+89-->[androidx.emoji2:emoji2:1.2.0] C:\Users\abder\.gradle\caches\8.8\transforms\d18f42b4ba3c3565a539149b18a46937\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
+90                android:value="androidx.startup" />
+90-->[androidx.emoji2:emoji2:1.2.0] C:\Users\abder\.gradle\caches\8.8\transforms\d18f42b4ba3c3565a539149b18a46937\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+91            <meta-data
+91-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\abder\.gradle\caches\8.8\transforms\0fea0d4e90d66b98394d954d8f11ae1e\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+92                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+92-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\abder\.gradle\caches\8.8\transforms\0fea0d4e90d66b98394d954d8f11ae1e\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+93                android:value="androidx.startup" />
+93-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\abder\.gradle\caches\8.8\transforms\0fea0d4e90d66b98394d954d8f11ae1e\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+94        </provider>
+95    </application>
+96
+97</manifest>
