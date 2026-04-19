@@ -1,0 +1,65 @@
+# ── Secrets & environment ────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+# .env.example is intentionally tracked — it is the contributor template
+
+# ── Claude Code (AI assistant tooling — local only, not for contributors) ────
+.claude/
+CLAUDE.md
+
+# ── Java / Maven ─────────────────────────────────────────────────────────────
+backend/target/
+*.class
+*.war
+*.jar
+!backend/docker/
+
+# ── Python ───────────────────────────────────────────────────────────────────
+ai-service/__pycache__/
+ai-service/**/__pycache__/
+**/__pycache__/
+ai-service/.venv/
+.venv/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+.pytest_cache/
+
+# ── Node / Frontend ──────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+node_modules/
+
+# ── Android ──────────────────────────────────────────────────────────────────
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.apk
+*.aab
+
+# ── Docker volumes (local data) ──────────────────────────────────────────────
+pgdata/
+chromadata/
+
+# ── IDE & OS ─────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# ── Cloudflare tunnel binary (local tunnel tool — not part of the project) ───
+cloudflared.exe
+cloudflared
+
+# ── TypeScript build artifacts ────────────────────────────────────────────────
+frontend/tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
