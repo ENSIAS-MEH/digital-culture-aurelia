@@ -4,13 +4,15 @@ import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
 } from 'recharts'
-import { TrendingDown, TrendingUp, Wallet, FileText, ArrowRight } from 'lucide-react'
+import { TrendingDown, TrendingUp, Wallet, FileText, ArrowRight, Download } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useNavigate } from 'react-router-dom'
 import type { TransactionSummary, Transaction } from '@/types'
 import GlassCard from '@/components/ui/GlassCard'
 import Badge from '@/components/ui/Badge'
 import Skeleton from '@/components/ui/Skeleton'
+import Button from '@/components/ui/Button'
+import { downloadMonthlyReport } from '@/lib/downloadMonthlyReport'
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
@@ -42,6 +44,20 @@ export default function Dashboard() {
   const [recent, setRecent]           = useState<Transaction[]>([])
   const [monthlyData, setMonthlyData] = useState<any[]>([])
   const [loading, setLoading]         = useState(true)
+  const [reportLoading, setReportLoading] = useState(false)
+  const [reportError, setReportError]     = useState('')
+
+  const handleDownloadReport = async () => {
+    setReportError('')
+    setReportLoading(true)
+    try {
+      await downloadMonthlyReport()
+    } catch (e: any) {
+      setReportError(e?.message ?? 'Could not generate report')
+    } finally {
+      setReportLoading(false)
+    }
+  }
 
   useEffect(() => {
     const now  = new Date()
@@ -105,9 +121,23 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="font-heading font-bold text-2xl text-aurelia-text tracking-tight">Dashboard</h1>
-        <p className="text-aurelia-muted text-sm mt-1">Your financial overview — last 90 days</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="font-heading font-bold text-2xl text-aurelia-text tracking-tight">Dashboard</h1>
+          <p className="text-aurelia-muted text-sm mt-1">Your financial overview — last 90 days</p>
+          {reportError && (
+            <p className="text-xs text-aurelia-danger mt-2">{reportError}</p>
+          )}
+        </div>
+        <Button
+          variant="ghost"
+          loading={reportLoading}
+          onClick={handleDownloadReport}
+          disabled={loading}
+        >
+          <Download size={14} />
+          {reportLoading ? 'Generating…' : 'Download Report'}
+        </Button>
       </div>
 
       {/* Stat cards */}
