@@ -1,0 +1,6 @@
+{
+  "name": "react-native-worklets",
+  "version": "0.0.1",
+  "description": "Shim for react-native-css-interop compatibility with Reanimated 3",
+  "main": "index.js"
+}

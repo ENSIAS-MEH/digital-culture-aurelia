@@ -45,14 +45,14 @@ public class TransactionRepository {
 
     public List<Object[]> summaryByCategory(UUID userId, LocalDate from, LocalDate to) {
         String jpql = """
-                SELECT t.category, SUM(t.amount), COUNT(t)
+                SELECT t.category, ABS(SUM(t.amount)), COUNT(t)
                 FROM Transaction t
                 WHERE t.user.id = :userId
                   AND t.amount < 0
                 """;
         if (from != null) jpql += " AND t.txnDate >= :from";
         if (to != null)   jpql += " AND t.txnDate <= :to";
-        jpql += " GROUP BY t.category ORDER BY SUM(t.amount) ASC";
+        jpql += " GROUP BY t.category ORDER BY ABS(SUM(t.amount)) DESC";
 
         var query = em.createQuery(jpql, Object[].class).setParameter("userId", userId);
         if (from != null) query.setParameter("from", from);

@@ -1,10 +1,13 @@
 package com.aurelia.service;
 
+import com.aurelia.dto.ManualTransactionRequest;
 import com.aurelia.dto.TransactionDTO;
 import com.aurelia.dto.TransactionSummaryDTO;
 import com.aurelia.model.Category;
 import com.aurelia.model.Transaction;
+import com.aurelia.model.User;
 import com.aurelia.repository.TransactionRepository;
+import com.aurelia.repository.UserRepository;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import java.math.BigDecimal;
@@ -18,6 +21,33 @@ import java.util.stream.Collectors;
 public class TransactionService {
 
     @EJB private TransactionRepository transactionRepository;
+    @EJB private UserRepository userRepository;
+
+    public TransactionDTO createManual(UUID userId, ManualTransactionRequest req) {
+        if (req.description == null || req.description.isBlank())
+            throw new IllegalArgumentException("Description is required");
+        if (req.amount == null || req.amount.compareTo(BigDecimal.ZERO) == 0)
+            throw new IllegalArgumentException("Amount must be non-zero");
+        if (req.txnDate == null)
+            throw new IllegalArgumentException("Date is required");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Category category = req.categoryId != null
+                ? transactionRepository.findCategoryById(req.categoryId).orElse(null)
+                : null;
+
+        Transaction txn = new Transaction();
+        txn.setUser(user);
+        txn.setTxnDate(LocalDate.parse(req.txnDate));
+        txn.setDescription(req.description.trim());
+        txn.setMerchant(req.merchant != null ? req.merchant.trim() : null);
+        txn.setAmount(req.amount); // sign from client: negative=expense, positive=income
+        txn.setCategory(category);
+        txn.setConfirmed(true);
+
+        return TransactionDTO.from(transactionRepository.save(txn));
+    }
 
     public List<TransactionDTO> list(UUID userId, LocalDate from, LocalDate to, Integer categoryId) {
         return transactionRepository.findByUserIdWithFilters(userId, from, to, categoryId)
