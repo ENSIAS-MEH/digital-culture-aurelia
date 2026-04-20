@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useFocusEffect } from '@react-navigation/native'
 import { BarChart } from 'react-native-chart-kit'
 import { api } from '@/lib/api'
 import { Colors } from '@/theme/colors'
@@ -84,6 +85,12 @@ export default function InsightsScreen() {
     load().finally(() => setLoading(false))
   }, [load])
 
+  useFocusEffect(
+    useCallback(() => {
+      load()
+    }, [load])
+  )
+
   const onRefresh = async () => {
     setRefreshing(true)
     await load()
@@ -126,11 +133,11 @@ export default function InsightsScreen() {
           </View>
         ) : null}
 
-        {!data && !error && (
+        {(!data || ((data.forecast_by_category ?? []).length === 0 && (data.anomalies ?? []).length === 0)) && !error && (
           <GlassCard style={styles.emptyCard}>
             <Text style={styles.emptyIcon}>📊</Text>
             <Text style={styles.emptyText}>No insights yet</Text>
-            <Text style={styles.emptyHint}>Add transactions to unlock AI insights</Text>
+            <Text style={styles.emptyHint}>Add a few transactions to unlock forecasts & anomaly detection</Text>
           </GlassCard>
         )}
 

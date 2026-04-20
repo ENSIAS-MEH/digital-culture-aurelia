@@ -2,6 +2,7 @@ package com.aurelia.resource;
 
 import com.aurelia.dto.ApiError;
 import com.aurelia.dto.CategoryPatchRequest;
+import com.aurelia.dto.ManualTransactionRequest;
 import com.aurelia.dto.TransactionDTO;
 import com.aurelia.dto.TransactionSummaryDTO;
 import com.aurelia.service.JwtService;
@@ -25,6 +26,17 @@ public class TransactionResource {
     @EJB private TransactionService transactionService;
     @EJB private JwtService jwtService;
     @Context private HttpHeaders httpHeaders;
+
+    @POST
+    @Operation(summary = "Create a manual transaction")
+    public Response create(ManualTransactionRequest req) {
+        try {
+            TransactionDTO created = transactionService.createManual(currentUser(), req);
+            return Response.status(201).entity(created).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(400).entity(ApiError.of(e.getMessage())).build();
+        }
+    }
 
     @GET
     @Operation(summary = "List transactions with optional filters")

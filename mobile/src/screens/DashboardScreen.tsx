@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useFocusEffect } from '@react-navigation/native'
 import { PieChart } from 'react-native-chart-kit'
 import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
@@ -52,20 +53,26 @@ export default function DashboardScreen() {
     load().finally(() => setLoading(false))
   }, [load])
 
+  useFocusEffect(
+    useCallback(() => {
+      load()
+    }, [load])
+  )
+
   const onRefresh = async () => {
     setRefreshing(true)
     await load()
     setRefreshing(false)
   }
 
-  // Build pie chart data from summary
+  // Build pie chart data from summary (byCategory returns positive totals for expenses)
   const pieData = (summary?.byCategory ?? [])
-    .filter((c) => c.total > 0)
+    .filter((c) => Math.abs(Number(c.total)) > 0)
     .map((c) => {
       const cat = CATEGORIES.find((k) => k.id === c.categoryId)
       return {
         name: c.categoryName ?? cat?.name ?? 'Other',
-        population: c.total,
+        population: Math.abs(Number(c.total)),
         color: c.categoryColor ?? cat?.color ?? Colors.muted,
         legendFontColor: Colors.muted,
         legendFontSize: 11,
@@ -101,7 +108,7 @@ export default function DashboardScreen() {
         <View style={styles.statsRow}>
           <StatCard
             title="Total Expenses"
-            value={fmt(summary?.totalExpenses ?? 0)}
+            value={fmt(Math.abs(Number(summary?.totalExpenses ?? 0)))}
             gradientColors={Gradients.danger}
             icon="📉"
           />

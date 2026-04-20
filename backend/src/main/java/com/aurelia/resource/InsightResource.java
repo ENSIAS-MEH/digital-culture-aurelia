@@ -8,6 +8,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import java.util.UUID;
 
 @Path("insights")
 @Produces(MediaType.APPLICATION_JSON)
@@ -32,7 +33,8 @@ public class InsightResource {
         if (claims == null)
             return Response.status(401).entity("{\"message\":\"Invalid or expired token\"}").build();
 
-        String json = insightService.getForecast(auth);
+        UUID userId = UUID.fromString(claims.getSubject());
+        String json = insightService.getForecast(auth, userId);
         return Response.ok(json).build();
     }
 }

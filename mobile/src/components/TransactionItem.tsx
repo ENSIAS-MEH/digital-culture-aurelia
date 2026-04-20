@@ -21,7 +21,7 @@ export default function TransactionItem({ transaction: t }: Props) {
   const cat = CATEGORIES.find((c) => c.id === t.categoryId)
   const catColor = cat?.color ?? t.categoryColor ?? Colors.muted
   const catName  = cat?.name  ?? t.categoryName  ?? t.rawCategory ?? 'Unknown'
-  const isIncome = t.categoryId === 7 || t.amount > 0 && t.categoryName === 'Income'
+  const isIncome = t.amount > 0
 
   return (
     <View style={styles.row}>

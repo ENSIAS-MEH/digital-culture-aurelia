@@ -24,24 +24,36 @@ interface Props {
   onCreated: () => void
 }
 
-const today = () => new Date().toISOString().split('T')[0]
+const INCOME_CATEGORY_ID = 7
+const DEFAULT_EXPENSE_CATEGORY_ID = 8
 
 export default function AddTransactionModal({ visible, onClose, onCreated }: Props) {
-  const [date, setDate]           = useState(new Date())
-  const [showPicker, setShowPicker] = useState(false)
+  const [type, setType]               = useState<'expense' | 'income'>('expense')
+  const [date, setDate]               = useState(new Date())
+  const [showPicker, setShowPicker]   = useState(false)
   const [description, setDescription] = useState('')
-  const [merchant, setMerchant]   = useState('')
-  const [amount, setAmount]       = useState('')
-  const [categoryId, setCategoryId] = useState<number>(CATEGORIES[7].id) // Default: Other
-  const [loading, setLoading]     = useState(false)
-  const [errors, setErrors]       = useState<Record<string, string>>({})
+  const [merchant, setMerchant]       = useState('')
+  const [amount, setAmount]           = useState('')
+  const [categoryId, setCategoryId]   = useState<number>(DEFAULT_EXPENSE_CATEGORY_ID)
+  const [loading, setLoading]         = useState(false)
+  const [errors, setErrors]           = useState<Record<string, string>>({})
+
+  const handleTypeChange = (t: 'expense' | 'income') => {
+    setType(t)
+    if (t === 'income') {
+      setCategoryId(INCOME_CATEGORY_ID)
+    } else {
+      if (categoryId === INCOME_CATEGORY_ID) setCategoryId(DEFAULT_EXPENSE_CATEGORY_ID)
+    }
+  }
 
   const reset = () => {
+    setType('expense')
     setDate(new Date())
     setDescription('')
     setMerchant('')
     setAmount('')
-    setCategoryId(CATEGORIES[7].id)
+    setCategoryId(DEFAULT_EXPENSE_CATEGORY_ID)
     setErrors({})
   }
 
@@ -58,12 +70,14 @@ export default function AddTransactionModal({ visible, onClose, onCreated }: Pro
     if (!validate()) return
     setLoading(true)
     try {
+      const parsed = parseFloat(amount)
+      const signedAmount = type === 'income' ? parsed : -parsed
       const payload: ManualTransactionInput = {
         txnDate:     date.toISOString().split('T')[0],
         description: description.trim(),
         merchant:    merchant.trim(),
         categoryId,
-        amount:      parseFloat(amount),
+        amount:      signedAmount,
       }
       await api.post('/transactions', payload)
       reset()
@@ -80,6 +94,8 @@ export default function AddTransactionModal({ visible, onClose, onCreated }: Pro
     reset()
     onClose()
   }
+
+  const expenseCategories = CATEGORIES.filter((c) => c.id !== INCOME_CATEGORY_ID)
 
   return (
     <Modal
@@ -99,6 +115,34 @@ export default function AddTransactionModal({ visible, onClose, onCreated }: Pro
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false} style={styles.body}>
+            {/* Type toggle */}
+            <View style={styles.typeRow}>
+              <TouchableOpacity
+                style={[
+                  styles.typeBtn,
+                  type === 'expense' && styles.typeBtnExpenseActive,
+                ]}
+                onPress={() => handleTypeChange('expense')}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.typeBtnText, type === 'expense' && styles.typeBtnExpenseText]}>
+                  📉 Expense
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.typeBtn,
+                  type === 'income' && styles.typeBtnIncomeActive,
+                ]}
+                onPress={() => handleTypeChange('income')}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.typeBtnText, type === 'income' && styles.typeBtnIncomeText]}>
+                  📈 Income
+                </Text>
+              </TouchableOpacity>
+            </View>
+
             {/* Date */}
             <View style={styles.field}>
               <Text style={styles.label}>Date</Text>
@@ -153,29 +197,31 @@ export default function AddTransactionModal({ visible, onClose, onCreated }: Pro
               containerStyle={styles.field}
             />
 
-            {/* Category */}
-            <View style={styles.field}>
-              <Text style={styles.label}>Category</Text>
-              <View style={styles.catGrid}>
-                {CATEGORIES.map((cat) => (
-                  <TouchableOpacity
-                    key={cat.id}
-                    style={[
-                      styles.catChip,
-                      { borderColor: `${cat.color}55` },
-                      categoryId === cat.id && { backgroundColor: `${cat.color}30`, borderColor: cat.color },
-                    ]}
-                    onPress={() => setCategoryId(cat.id)}
-                    activeOpacity={0.7}
-                  >
-                    <View style={[styles.catDot, { backgroundColor: cat.color }]} />
-                    <Text style={[styles.catLabel, categoryId === cat.id && { color: cat.color }]}>
-                      {cat.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+            {/* Category — only shown for expenses */}
+            {type === 'expense' && (
+              <View style={styles.field}>
+                <Text style={styles.label}>Category</Text>
+                <View style={styles.catGrid}>
+                  {expenseCategories.map((cat) => (
+                    <TouchableOpacity
+                      key={cat.id}
+                      style={[
+                        styles.catChip,
+                        { borderColor: `${cat.color}55` },
+                        categoryId === cat.id && { backgroundColor: `${cat.color}30`, borderColor: cat.color },
+                      ]}
+                      onPress={() => setCategoryId(cat.id)}
+                      activeOpacity={0.7}
+                    >
+                      <View style={[styles.catDot, { backgroundColor: cat.color }]} />
+                      <Text style={[styles.catLabel, categoryId === cat.id && { color: cat.color }]}>
+                        {cat.name}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-            </View>
+            )}
 
             {/* Submit */}
             <Button
@@ -184,7 +230,7 @@ export default function AddTransactionModal({ visible, onClose, onCreated }: Pro
               fullWidth
               style={styles.submitBtn}
             >
-              Add Transaction
+              Add {type === 'income' ? 'Income' : 'Expense'}
             </Button>
           </ScrollView>
         </GlassCard>
@@ -231,6 +277,39 @@ const styles = StyleSheet.create({
   },
   body: {
     flexGrow: 0,
+  },
+  typeRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 16,
+  },
+  typeBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.subtle,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+  },
+  typeBtnExpenseActive: {
+    backgroundColor: 'rgba(244,63,94,0.15)',
+    borderColor: Colors.danger,
+  },
+  typeBtnIncomeActive: {
+    backgroundColor: 'rgba(16,185,129,0.15)',
+    borderColor: Colors.success,
+  },
+  typeBtnText: {
+    color: Colors.muted,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  typeBtnExpenseText: {
+    color: Colors.danger,
+  },
+  typeBtnIncomeText: {
+    color: Colors.success,
   },
   field: {
     marginBottom: 16,
